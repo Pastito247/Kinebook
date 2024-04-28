@@ -1,6 +1,6 @@
 import React from 'react';
-import Constants from 'expo-constants';
 import { View, Text, TextInput, Image, StyleSheet } from 'react-native';
+
 const Main = () => {
   return (
     <View style={styles.container}>
