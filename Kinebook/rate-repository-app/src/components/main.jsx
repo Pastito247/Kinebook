@@ -4,19 +4,20 @@ import { View, Text, TextInput, Image, StyleSheet } from 'react-native';
 const Main = () => {
   return (
     <View style={styles.container}>
-    <Image source={require('../img/image.png')} style={styles.image} />
-    <TextInput placeholder="Email" style={styles.input} />
-    <TextInput placeholder="Password" style={styles.input} secureTextEntry />
-    <View style={styles.buttonContainer}>
-      <Text style={styles.buttonText}>Login</Text>
+      <Image source={require('../img/image.png')} style={styles.image} />
+      <TextInput placeholder="Email" style={styles.input} />
+      <TextInput placeholder="Password" style={styles.input} secureTextEntry />
+      <View style={styles.buttonContainer}>
+        <Text style={styles.buttonText}>Login</Text>
+      </View>
     </View>
-  </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#0EE7D0',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -28,20 +29,22 @@ const styles = StyleSheet.create({
   input: {
     height: 40,
     width: 300,
+    backgroundColor: 'white',
     borderColor: 'gray',
     borderWidth: 1,
     marginVertical: 10,
     paddingHorizontal: 10,
   },
   buttonContainer: {
-    backgroundColor: 'blue',
+    backgroundColor: 'white',
     paddingVertical: 10,
     width: 300,
     marginTop: 20,
   },
   buttonText: {
-    color: 'white',
+    color: 'blue',
     textAlign: 'center',
   },
 });
-export default Main
+
+export default Main;
