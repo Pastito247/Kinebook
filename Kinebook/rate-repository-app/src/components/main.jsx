@@ -1,19 +1,26 @@
 import React from 'react';
-import { View, Text, TextInput, Image, StyleSheet, ImageBackground } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Image, ImageBackground, TouchableOpacity } from 'react-native';
 
-const background = {uri: 'https://i.ibb.co/XV0ZzK4/Background.jpg'};
+const background = { uri: 'https://i.ibb.co/XV0ZzK4/Background.jpg' };
 
 const Main = () => {
   return (
     <ImageBackground source={background} resizeMode='cover' style={styles.background}>
-    <View style={styles.container}>
-      <TextInput placeholder="Email" style={styles.input} />
-      <TextInput placeholder="Password" style={styles.input} secureTextEntry />
-      <View style={styles.buttonContainer}>
-        <Text style={styles.buttonText}>Login</Text>
+      <View style={styles.container}>
+        <Image source={require('../img/welcome.jpg')} style={styles.image} />
+        <TextInput placeholder="Email" style={styles.input} keyboardType="email-address" autoCapitalize="none" />
+        <TextInput placeholder="Password" style={styles.input} secureTextEntry />
+        <TouchableOpacity style={styles.forgotPasswordContainer}>
+          <Text style={styles.forgotPassword}>Olvide mi contraseña</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.buttonContainer}>
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Text style={styles.register}>Registrate</Text>
+        </TouchableOpacity>
       </View>
-    </View>
-      </ImageBackground>
+    </ImageBackground>
   );
 };
 
@@ -22,28 +29,51 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 20,
   },
-  background:{
+  background: {
     flex: 1,
     justifyContent: 'center',
   },
+  image: {
+    marginTop: 100,
+    marginBottom: 20,
+  },
   input: {
     height: 40,
-    width: 300,
+    width: '100%',
     backgroundColor: 'white',
     borderColor: 'gray',
     borderWidth: 1,
-    marginVertical: 10,
+    borderRadius: 5,
     paddingHorizontal: 10,
+    marginBottom: 20,
+    marginTop: 10,
+  },
+  forgotPasswordContainer: {
+    width: '100%',
+    alignItems: 'flex-end',
+  },
+  forgotPassword: {
+    fontSize: 12,
+    color: 'gray',
+    marginBottom: 20,
   },
   buttonContainer: {
-    backgroundColor: 'white',
-    width: 300,
-    marginTop: 20,
+    backgroundColor: '#77CFAF',
+    paddingVertical: 10,
+    width: '100%',
+    borderRadius: 60,
+    alignItems: 'center',
+    marginBottom: 20,
   },
   buttonText: {
-    color: 'blue',
-    textAlign: 'center',
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  register: {
+    fontSize: 14,
+    color: 'gray',
   },
 });
 
