@@ -1,30 +1,31 @@
 import React from 'react';
-import { View, Text, TextInput, Image, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Image, StyleSheet, ImageBackground } from 'react-native';
+
+const background = {uri: 'https://i.ibb.co/XV0ZzK4/Background.jpg'};
 
 const Main = () => {
   return (
+    <ImageBackground source={background} resizeMode='cover' style={styles.background}>
     <View style={styles.container}>
-      <Image source={require('../img/image.png')} style={styles.image} />
       <TextInput placeholder="Email" style={styles.input} />
       <TextInput placeholder="Password" style={styles.input} secureTextEntry />
       <View style={styles.buttonContainer}>
         <Text style={styles.buttonText}>Login</Text>
       </View>
     </View>
+      </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0EE7D0',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  image: {
-    width: 100,
-    height: 100,
-    marginBottom: 20,
+  background:{
+    flex: 1,
+    justifyContent: 'center',
   },
   input: {
     height: 40,
@@ -37,7 +38,6 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     backgroundColor: 'white',
-    paddingVertical: 10,
     width: 300,
     marginTop: 20,
   },
