@@ -3,7 +3,7 @@ import { View, Text, TextInput, StyleSheet, Image, ImageBackground, TouchableOpa
 
 const background = { uri: 'https://i.ibb.co/XV0ZzK4/Background.jpg' };
 
-const Main = () => {
+const Main = ({ navigation }) => {
   return (
     <ImageBackground source={background} resizeMode='cover' style={styles.background}>
       <View style={styles.container}>
@@ -13,10 +13,10 @@ const Main = () => {
         <TouchableOpacity style={styles.forgotPasswordContainer}>
           <Text style={styles.forgotPassword}>Olvide mi contraseña</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate('Lobby')}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Register')}>
           <Text style={styles.register}>Registrate</Text>
         </TouchableOpacity>
       </View>
