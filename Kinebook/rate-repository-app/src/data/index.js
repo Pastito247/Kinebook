@@ -1,54 +1,77 @@
 const express = require('express');
-const app = express();
+const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-app.use(express.json());
+const cors = require('cors');
+const bcrypt = require('bcrypt'); // Para hashear las contraseñas
+require('dotenv').config();
 
+const app = express();
+const port = process.env.PORT || 3000;
 
-const   mongoURL =
-  "mongodb+srv://ADMIN:1ayYpcTHzc5QelgJ@kinecluster.njnbyxo.mongodb.net/?retryWrites=true&w=majority&appName=KineCluster"
-  ;
+const uri = process.env.MONGO_URI || 'mongodb+srv://ADMIN:1ayYpcTHzc5QelgJ@kinecluster.njnbyxo.mongodb.net/Kinebook?retryWrites=true&w=majority&appName=KineCluster';
 
-mongoose
-  .connect(mongoURL)
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((e) => {
-    console.error("Error connecting to MongoDB:", e);
-  });
+// Conectar a MongoDB
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('Error connecting to MongoDB:', err));
 
-
- 
-require('./kinesiologos');
-const Kine = mongoose.model("Kines");
-
-
-app.get("/", (req, res) => {
-  res.send({status: "Started"});
+// Definir el esquema y el modelo
+const kinesiologoSchema = new mongoose.Schema({
+  nombre: String,
+  apellido: String,
+  correo: { type: String, unique: true },
+  contraseña: String,
 });
 
-app.post("/register", async(req, res) => {
-  const {nombre, apellido, correo, contrasena} = req.body;
+const Kinesiologo = mongoose.model('Kinesiologo', kinesiologoSchema);
 
-  const creado = await Kine.findOne({correo:correo});
+app.use(cors());
+app.use(bodyParser.json());
 
-  if(creado){
-    res.status(400).send({message:"El correo ya existe"});
-  }
-
+// Endpoint para crear un nuevo kinesiologo
+app.post('/api/kinesiologos', async (req, res) => {
+  const { nombre, apellido, correo, contraseña } = req.body;
   try {
-    await Kine.create({
-      nombre: nombre,
-      apellido: apellido,
-      correo: correo,
-      contraseña: contrasena,
-    });
-    res.send({status:"ok", data:"Kinesilogo Creado"})
-  } catch (error) {
-    res.send({status:"error", data:"Error"})
+    const hashedPassword = await bcrypt.hash(contraseña, 10); // Hashear la contraseña
+    const nuevoKinesiologo = new Kinesiologo({ nombre, apellido, correo, contraseña: hashedPassword });
+    const savedKinesiologo = await nuevoKinesiologo.save();
+    res.status(201).json({ message: 'Kinesiologo agregado exitosamente', kinesiologoId: savedKinesiologo._id });
+  } catch (err) {
+    console.error('Error al agregar el kinesiologo:', err);
+    res.status(500).send('Error al agregar el kinesiologo');
   }
+});
 
-})
+// Endpoint para iniciar sesión
+app.post('/api/login', async (req, res) => {
+  const { correo, contraseña } = req.body;
+  try {
+    const kinesiologo = await Kinesiologo.findOne({ correo });
+    if (!kinesiologo) {
+      return res.status(400).json({ message: 'Correo o contraseña incorrectos' });
+    }
+    const isMatch = await bcrypt.compare(contraseña, kinesiologo.contraseña);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Correo o contraseña incorrectos' });
+    }
+    res.status(200).json({ message: 'Inicio de sesión exitoso', kinesiologoId: kinesiologo._id });
+  } catch (err) {
+    console.error('Error al iniciar sesión:', err);
+    res.status(500).send('Error al iniciar sesión');
+  }
+});
 
+// Endpoint para obtener todos los kinesiologos
+app.get('/api/kinesiologos', async (req, res) => {
+  try {
+    const kinesiologos = await Kinesiologo.find();
+    res.json(kinesiologos);
+  } catch (err) {
+    console.error('Error al obtener los kinesiologos:', err);
+    res.status(500).send('Error al obtener los kinesiologos');
+  }
+});
 
-app.listen(3000, () =>{
-  console.log("nodeJS server started");
+app.listen(port, () => {
+  console.log(`Servidor ejecutándose en http://localhost:${port}`);
 });
