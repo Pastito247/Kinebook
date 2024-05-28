@@ -1,10 +1,10 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Main from './src/screens/Main';
+import Main from './src/screens/main';
 import Lobby from './src/screens/lobby';
 import Register from './src/screens/register';
-import Profile from './src/screens/perfille';
+import Profile from './src/screens/perfil';
 import Evaluation from './src/screens/escalas';
 
 const Stack = createNativeStackNavigator();

@@ -2,5 +2,10 @@ Dependencias:
 npm install @react-navigation/native
 npm install @react-navigation/native-stack
 npm install react-native-screens react-native-safe-area-context
+npm install dotenv
+npm install express mongoose body-parser
 
-npm install express oracledb body-parser
+Prender Base(microservicio)
+cd .\Kinebook\rate-repository-app\src\data\
+
+node index.js
