@@ -54,13 +54,16 @@ app.post('/api/login', async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ message: 'Correo o contraseña incorrectos' });
     }
-    res.status(200).json({ message: 'Inicio de sesión exitoso', kinesiologoId: kinesiologo._id });
+    res.status(200).json({
+      message: 'Inicio de sesión exitoso',
+      kinesiologoId: kinesiologo._id,
+      nombre: kinesiologo.nombre // Asegúrate de que el nombre se está devolviendo aquí
+    });
   } catch (err) {
     console.error('Error al iniciar sesión:', err);
     res.status(500).send('Error al iniciar sesión');
   }
 });
-
 // Endpoint para obtener todos los kinesiologos
 app.get('/api/kinesiologos', async (req, res) => {
   try {

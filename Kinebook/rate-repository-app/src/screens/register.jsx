@@ -11,7 +11,7 @@ const Registro = ({ navigation }) => {
 
   const handleRegistro = async () => {
     try {
-      const response = await fetch('http://192.168.0.5:3000/api/kinesiologos', {
+      const response = await fetch('http://192.168.0.10:3000/api/kinesiologos', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
