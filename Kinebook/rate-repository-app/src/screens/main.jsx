@@ -1,35 +1,37 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TextInput, StyleSheet, Image, ImageBackground, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Image, ImageBackground, TouchableOpacity, Alert, Dimensions } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
-const backgroundImage = { uri: 'https://i.ibb.co/XV0ZzK4/Background.jpg' };
+const { width, height } = Dimensions.get('window');
+const background = require('../img/background.jpg');
 const welcomeImage = require('../img/welcome.jpg');
 
 const Main = ({ navigation }) => {
   const [correo, setCorreo] = useState('');
   const [contraseña, setContraseña] = useState('');
 
-  const handleLogin = async () => {
-    try {
-      const response = await fetch('http://192.168.0.10:3000/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ correo, contraseña }),
-      });
-      if (!response.ok) {
-        throw new Error('Correo o contraseña incorrectos');
-      }
-      const result = await response.json();
-      Alert.alert('Éxito', 'Inicio de sesión exitoso');
-      console.log('Inicio de sesión exitoso:', result);
-      navigation.navigate('Lobby', { nombre: result.nombre }); // Pasar el nombre del usuario aquí
-    } catch (error) {
-      console.error('Error al realizar la solicitud:', error.message);
-      Alert.alert('Error', 'Correo o contraseña incorrectos');
+// Main.js (Login screen)
+const handleLogin = async () => {
+  try {
+    const response = await fetch('http://192.168.0.10:3000/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ correo, contraseña }),
+    });
+    if (!response.ok) {
+      throw new Error('Correo o contraseña incorrectos');
     }
-  };
+    const result = await response.json();
+    Alert.alert('Éxito', 'Inicio de sesión exitoso');
+    navigation.navigate('Lobby', { kinesiologoId: result.kinesiologoId });
+  } catch (error) {
+    console.error('Error al realizar la solicitud:', error.message);
+    Alert.alert('Error', 'Correo o contraseña incorrectos');
+  }
+};
+
 
   useFocusEffect(
     useCallback(() => {
@@ -40,7 +42,7 @@ const Main = ({ navigation }) => {
   );
 
   return (
-    <ImageBackground source={backgroundImage} resizeMode='cover' style={styles.background}>
+    <ImageBackground source={background} resizeMode='cover' style={{ width, height }}>
       <View style={styles.container}>
         <Image source={welcomeImage} style={styles.image} />
         <TextInput

@@ -1,24 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ImageBackground, Dimensions } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 const { width, height } = Dimensions.get('window');
 
-const background = { uri: 'https://i.ibb.co/XV0ZzK4/Background.jpg' };
+const background = require('../img/background.jpg');
 
-const Lobby = () => {
+const Lobby = ({ route }) => {
+  const { kinesiologoId } = route.params;
   const navigation = useNavigation();
-  const route = useRoute();
-  const { nombre } = route.params;  // Obtener el nombre del usuario de los parámetros de navegación
-
   const [menuVisible, setMenuVisible] = useState(false);
+  const [nombre, setNombre] = useState('');
+
+  useEffect(() => {
+    fetch(`http://192.168.0.10:3000/api/kinesiologo/${kinesiologoId}`)
+      .then(response => response.json())
+      .then(data => {
+        setNombre(data.nombre);
+      })
+      .catch(error => console.error('Error al realizar la solicitud:', error));
+  }, [kinesiologoId]);
 
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
   };
 
   const handleLogout = () => {
-    // Aquí puedes añadir la lógica para cerrar sesión si es necesario
     navigation.navigate('Main');
   };
 
@@ -31,7 +38,7 @@ const Lobby = () => {
         </TouchableOpacity>
         {menuVisible && (
           <View style={{ backgroundColor: 'white', borderRadius: 5, width: '80%', alignItems: 'center', position: 'absolute', top: 80, left: 20, paddingVertical: 10 }}>
-            <TouchableOpacity style={{ paddingVertical: 10, width: '100%', alignItems: 'center' }} onPress={() => navigation.navigate('Profile')}>
+            <TouchableOpacity style={{ paddingVertical: 10, width: '100%', alignItems: 'center' }} onPress={() => navigation.navigate('Profile', { kinesiologoId })}>
               <Text style={{ color: '#333' }}>Perfil</Text>
             </TouchableOpacity>
             <TouchableOpacity style={{ paddingVertical: 10, width: '100%', alignItems: 'center' }} onPress={() => navigation.navigate('Evaluation')}>

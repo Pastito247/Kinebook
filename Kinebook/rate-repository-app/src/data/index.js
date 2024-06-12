@@ -1,21 +1,21 @@
+// Importar dependencias necesarias
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const bcrypt = require('bcrypt'); // Para hashear las contraseñas
+const bcrypt = require('bcrypt');
 require('dotenv').config();
 
+// Crear la aplicación express y definir el puerto
 const app = express();
 const port = process.env.PORT || 3000;
 
-const uri = process.env.MONGO_URI || 'mongodb+srv://ADMIN:1ayYpcTHzc5QelgJ@kinecluster.njnbyxo.mongodb.net/Kinebook?retryWrites=true&w=majority&appName=KineCluster';
-
 // Conectar a MongoDB
-mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('Error connecting to MongoDB:', err));
 
-// Definir el esquema y el modelo
+// Definir el esquema y el modelo de Kinesiologo
 const kinesiologoSchema = new mongoose.Schema({
   nombre: String,
   apellido: String,
@@ -25,10 +25,25 @@ const kinesiologoSchema = new mongoose.Schema({
 
 const Kinesiologo = mongoose.model('Kinesiologo', kinesiologoSchema);
 
+// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// Endpoint para crear un nuevo kinesiologo
+// Endpoint para obtener los datos de un kinesiologo por ID
+app.get('/api/kinesiologo/:id', async (req, res) => {
+  try {
+    const kinesiologo = await Kinesiologo.findById(req.params.id);
+    if (!kinesiologo) {
+      return res.status(404).json({ message: 'Kinesiologo no encontrado' });
+    }
+    res.json(kinesiologo);
+  } catch (err) {
+    console.error('Error al obtener el kinesiologo:', err);
+    res.status(500).send('Error al obtener el kinesiologo');
+  }
+});
+
+// Otros endpoints...
 app.post('/api/kinesiologos', async (req, res) => {
   const { nombre, apellido, correo, contraseña } = req.body;
   try {
@@ -42,7 +57,7 @@ app.post('/api/kinesiologos', async (req, res) => {
   }
 });
 
-// Endpoint para iniciar sesión
+// Iniciar sesión
 app.post('/api/login', async (req, res) => {
   const { correo, contraseña } = req.body;
   try {
@@ -54,27 +69,16 @@ app.post('/api/login', async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ message: 'Correo o contraseña incorrectos' });
     }
-    res.status(200).json({
-      message: 'Inicio de sesión exitoso',
-      kinesiologoId: kinesiologo._id,
-      nombre: kinesiologo.nombre // Asegúrate de que el nombre se está devolviendo aquí
-    });
+    res.status(200).json({ message: 'Inicio de sesión exitoso', kinesiologoId: kinesiologo._id });
   } catch (err) {
     console.error('Error al iniciar sesión:', err);
     res.status(500).send('Error al iniciar sesión');
   }
 });
-// Endpoint para obtener todos los kinesiologos
-app.get('/api/kinesiologos', async (req, res) => {
-  try {
-    const kinesiologos = await Kinesiologo.find();
-    res.json(kinesiologos);
-  } catch (err) {
-    console.error('Error al obtener los kinesiologos:', err);
-    res.status(500).send('Error al obtener los kinesiologos');
-  }
-});
 
+// Otros endpoints para crear, actualizar, eliminar kinesiologos...
+
+// Iniciar el servidor
 app.listen(port, () => {
   console.log(`Servidor ejecutándose en http://localhost:${port}`);
 });

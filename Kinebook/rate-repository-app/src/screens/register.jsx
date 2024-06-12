@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Alert, Dimensions } from 'react-native';
 
-const background = { uri: 'https://i.ibb.co/XV0ZzK4/Background.jpg' };
+const { width, height } = Dimensions.get('window');
+
+const background = require('../img/background.jpg');
 
 const Registro = ({ navigation }) => {
   const [nombre, setNombre] = useState('');
@@ -23,7 +25,7 @@ const Registro = ({ navigation }) => {
       }
       // Si la solicitud es exitosa, puedes mostrar un mensaje al usuario y redirigirlo al Lobby
       Alert.alert('Éxito', 'Kinesiólogo registrado exitosamente');
-      navigation.navigate('lobby');
+      navigation.navigate('Main');
     } catch (error) {
       console.error('Error al realizar la solicitud:', error.message);
       Alert.alert('Error', 'Ocurrió un error al registrar el kinesiólogo');
@@ -31,7 +33,7 @@ const Registro = ({ navigation }) => {
   };
 
   return (
-    <ImageBackground source={background} resizeMode='cover' style={styles.background}>
+    <ImageBackground source={background} resizeMode='cover' style={{ width, height }}>
       <View style={styles.container}>
         <Text style={styles.title}>Registro de Kinesiólogo</Text>
         <TextInput
