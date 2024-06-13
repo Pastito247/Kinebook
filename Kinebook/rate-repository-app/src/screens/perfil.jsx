@@ -24,11 +24,9 @@ const Perfil = ({ route, navigation }) => {
     <ImageBackground source={require('../img/background.jpg')} resizeMode='cover' style={{ width, height }}>
       <View style={styles.container}>
         <View style={styles.box}>
-          <Text style={styles.text}>Nombre Completo:</Text>
-          <Text style={styles.text}>{kinesiologo.nombre} {kinesiologo.apellido}</Text>
-          <Text style={styles.text}>Correo:</Text>
-          <Text style={styles.text}>{kinesiologo.correo}</Text>
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Evaluation')}>
+          <Text style={styles.text}>Nombre Completo: {kinesiologo.nombre} {kinesiologo.apellido}</Text>
+          <Text style={styles.text}>Correo: {kinesiologo.correo}</Text>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Evaluaciones', { kinesiologoId })}>
             <Text style={styles.buttonText}>Ver Evaluaciones</Text>
           </TouchableOpacity>
         </View>

@@ -5,7 +5,9 @@ import Main from './src/screens/main';
 import Lobby from './src/screens/lobby';
 import Register from './src/screens/register';
 import Profile from './src/screens/perfil';
-import Evaluation from './src/screens/escalas';
+import Evaluaciones from './src/screens/evaluaciones';
+import NuevaEvaluacion from './src/screens/nuevaevaluacion';
+import DetalleEvaluacion from './src/screens/detalleEvaluacion';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,7 +19,9 @@ const App = () => {
         <Stack.Screen name="Lobby" component={Lobby} options={{ headerShown: false }} />
         <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
         <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
-        <Stack.Screen name="Evaluation" component={Evaluation} options={{ headerShown: false }} />
+        <Stack.Screen name="Evaluaciones" component={Evaluaciones} options={{ headerShown: false }}/>
+        <Stack.Screen name="NuevaEvaluacion" component={NuevaEvaluacion} options={{ headerShown: false }}/>
+        <Stack.Screen name="DetalleEvaluacion" component={DetalleEvaluacion} options={{ headerShown: false }}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -25,6 +25,21 @@ const kinesiologoSchema = new mongoose.Schema({
 
 const Kinesiologo = mongoose.model('Kinesiologo', kinesiologoSchema);
 
+// Definir el esquema y el modelo de Evaluacion
+const evaluacionSchema = new mongoose.Schema({
+  kinesiologoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Kinesiologo' },
+  nombrePaciente: String,
+  escalas: {
+    brazoIzquierdo: String,
+    brazoDerecho: String,
+    piernaIzquierda: String,
+    piernaDerecha: String,
+  },
+  fecha: { type: Date, default: Date.now },
+});
+
+const Evaluacion = mongoose.model('Evaluacion', evaluacionSchema);
+
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
@@ -43,7 +58,7 @@ app.get('/api/kinesiologo/:id', async (req, res) => {
   }
 });
 
-// Otros endpoints...
+// Endpoint para agregar un nuevo kinesiologo
 app.post('/api/kinesiologos', async (req, res) => {
   const { nombre, apellido, correo, contraseña } = req.body;
   try {
@@ -57,7 +72,7 @@ app.post('/api/kinesiologos', async (req, res) => {
   }
 });
 
-// Iniciar sesión
+// Endpoint para iniciar sesión
 app.post('/api/login', async (req, res) => {
   const { correo, contraseña } = req.body;
   try {
@@ -76,7 +91,44 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// Otros endpoints para crear, actualizar, eliminar kinesiologos...
+// Endpoint para agregar una nueva evaluacion
+app.post('/api/evaluaciones', async (req, res) => {
+  const { kinesiologoId, nombrePaciente, escalas } = req.body;
+  try {
+    const nuevaEvaluacion = new Evaluacion({ kinesiologoId, nombrePaciente, escalas });
+    const savedEvaluacion = await nuevaEvaluacion.save();
+    res.status(201).json({ message: 'Evaluacion agregada exitosamente', evaluacionId: savedEvaluacion._id });
+  } catch (err) {
+    console.error('Error al agregar la evaluacion:', err);
+    res.status(500).send('Error al agregar la evaluacion');
+  }
+});
+
+// Endpoint para obtener las evaluaciones de un kinesiologo por su ID
+app.get('/api/evaluaciones', async (req, res) => {
+  const { kinesiologoId } = req.query;
+  try {
+    const evaluaciones = await Evaluacion.find({ kinesiologoId });
+    res.json(evaluaciones);
+  } catch (err) {
+    console.error('Error al obtener las evaluaciones:', err);
+    res.status(500).send('Error al obtener las evaluaciones');
+  }
+});
+
+// Endpoint para obtener una evaluacion por su ID
+app.get('/api/evaluaciones/:id', async (req, res) => {
+  try {
+    const evaluacion = await Evaluacion.findById(req.params.id);
+    if (!evaluacion) {
+      return res.status(404).json({ message: 'Evaluacion no encontrada' });
+    }
+    res.json(evaluacion);
+  } catch (err) {
+    console.error('Error al obtener la evaluacion:', err);
+    res.status(500).send('Error al obtener la evaluacion');
+  }
+});
 
 // Iniciar el servidor
 app.listen(port, () => {
