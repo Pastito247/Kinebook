@@ -7,6 +7,8 @@ npm install express mongoose body-parser
 npm install cors
 npm install bcrypt
 npm install express-session
+npm install @react-native-picker/picker
+npm install @react-native-community/checkbox
 
 
 

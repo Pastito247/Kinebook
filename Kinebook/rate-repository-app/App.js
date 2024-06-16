@@ -8,6 +8,7 @@ import Profile from './src/screens/perfil';
 import Evaluaciones from './src/screens/evaluaciones';
 import NuevaEvaluacion from './src/screens/nuevaevaluacion';
 import DetalleEvaluacion from './src/screens/detalleEvaluacion';
+import SelectEvaluation from './src/screens/SelecEvaluacion';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +23,7 @@ const App = () => {
         <Stack.Screen name="Evaluaciones" component={Evaluaciones} options={{ headerShown: false }}/>
         <Stack.Screen name="NuevaEvaluacion" component={NuevaEvaluacion} options={{ headerShown: false }}/>
         <Stack.Screen name="DetalleEvaluacion" component={DetalleEvaluacion} options={{ headerShown: false }}/>
+        <Stack.Screen name="SelectEvaluation" component={SelectEvaluation} options={{ headerShown: false }}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

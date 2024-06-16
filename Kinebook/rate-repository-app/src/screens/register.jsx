@@ -33,7 +33,7 @@ const Registro = ({ navigation }) => {
   };
 
   return (
-    <ImageBackground source={background} resizeMode='cover' style={{ width, height }}>
+    <ImageBackground source={background} style={styles.background}>
       <View style={styles.container}>
         <Text style={styles.title}>Registro de Kinesiólogo</Text>
         <TextInput
@@ -70,6 +70,11 @@ const Registro = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',

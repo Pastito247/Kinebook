@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ImageBackground, Dimensions, TouchableOpacity } from 'react-native';
 
-const { width, height } = Dimensions.get('window');
 
-const Perfil = ({ route, navigation }) => {
+
+const background = require('../img/BackgroundLobby.jpeg');
+
+const Perfil = ({ route }) => {
   const { kinesiologoId } = route.params;
   const [kinesiologo, setKinesiologo] = useState(null);
 
@@ -12,6 +14,7 @@ const Perfil = ({ route, navigation }) => {
       .then(response => response.json())
       .then(data => {
         setKinesiologo(data);
+        console.log(kinesiologoId);
       })
       .catch(error => console.error('Error al realizar la solicitud:', error));
   }, [kinesiologoId]);
@@ -21,14 +24,13 @@ const Perfil = ({ route, navigation }) => {
   }
 
   return (
-    <ImageBackground source={require('../img/background.jpg')} resizeMode='cover' style={{ width, height }}>
+    <ImageBackground source={background} style={styles.background}>
       <View style={styles.container}>
         <View style={styles.box}>
-          <Text style={styles.text}>Nombre Completo: {kinesiologo.nombre} {kinesiologo.apellido}</Text>
-          <Text style={styles.text}>Correo: {kinesiologo.correo}</Text>
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Evaluaciones', { kinesiologoId })}>
-            <Text style={styles.buttonText}>Ver Evaluaciones</Text>
-          </TouchableOpacity>
+          <Text style={styles.text}>Nombre Completo: </Text>
+          <Text>{kinesiologo.nombre} {kinesiologo.apellido}</Text>
+          <Text style={styles.text}>Correo: </Text>
+          <Text>{kinesiologo.correo}</Text>
         </View>
       </View>
     </ImageBackground>
@@ -36,6 +38,11 @@ const Perfil = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
