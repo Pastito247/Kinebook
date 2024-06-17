@@ -42,13 +42,51 @@ const DetalleEvaluaciones = ({ route, navigation }) => {
     }
   };
 
-  const renderValue = (value) => {
-    if (typeof value === 'object' && value !== null) {
-      // Si es un objeto, asume que es un solo par clave-valor y extrae el valor
-      const key = Object.keys(value)[0];
-      return value[key];
+  const renderNeuroMuscular = (answers) => (
+    <>
+      {Object.entries(answers).map(([key, value], idx) => (
+        <View key={idx}>
+          <Text style={styles.resultText}>{`Sección: ${key}`}</Text>
+          <Text style={styles.resultText}>{`MRC: ${value.mrc || 'N/A'}`}</Text>
+          <Text style={styles.resultText}>{`Descripción: ${value.description || 'N/A'}`}</Text>
+        </View>
+      ))}
+    </>
+  );
+
+  const renderMusculoEsqueletico = (answers) => {
+    const sections = [
+      'Flexión columna',
+      'Extensión columna',
+      'Rotación derecha columna',
+      'Rotación izquierda columna',
+      'Inclinación izquierda columna',
+      'Inclinación derecha columna',
+      'Flexión cadera',
+      'Extensión cadera',
+      'Rotación interna cadera',
+      'Rotación externa cadera',
+    ];
+
+    return sections.map((section, idx) => (
+      <Text key={idx} style={styles.resultText}>
+        {section}: {answers[idx]?.answer ? `${answers[idx].answer}°` : 'N/A'}
+      </Text>
+    ));
+  };
+
+  const renderEvaluacion = (evaluacion) => {
+    console.log('Evaluación:', evaluacion); // Añadimos este log para verificar los datos en consola
+    switch (evaluacion.type) {
+      case 'NeuroMuscular':
+        return renderNeuroMuscular(evaluacion.answers);
+      case 'MusculoEsqueletico':
+        return renderMusculoEsqueletico(evaluacion.answers);
+      default:
+        return Object.entries(evaluacion.answers).map(([key, value], idx) => (
+          <Text key={idx} style={styles.resultText}>{`${key}: ${typeof value === 'object' ? value[Object.keys(value)[0]] : value}`}</Text>
+        ));
     }
-    return value.toString();
   };
 
   return (
@@ -64,9 +102,7 @@ const DetalleEvaluaciones = ({ route, navigation }) => {
                 <Text style={styles.text}>Nombre del Paciente: {evaluacion.patientName}</Text>
                 <Text style={styles.text}>Tipo de Evaluación: {evaluacion.type}</Text>
                 <Text style={styles.text}>Resultados:</Text>
-                {evaluacion.answers && Object.entries(evaluacion.answers).map(([key, value], idx) => (
-                  <Text key={idx} style={styles.resultText}>{`${key}: ${renderValue(value)}`}</Text>
-                ))}
+                {renderEvaluacion(evaluacion)}
                 <Text style={styles.text}>Fecha: {new Date(evaluacion.fecha).toLocaleDateString()}</Text>
                 <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(evaluacion._id)}>
                   <Text style={styles.deleteButtonText}>Eliminar</Text>
