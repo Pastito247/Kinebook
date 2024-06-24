@@ -4,10 +4,10 @@ import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react
 const background = require('../img/BackgroundLobby.jpeg');
 
 const SelectEvaluation = ({ navigation, route }) => {
-  const { kinesiologoId } = route.params;
+  const { kinesiologoId, pacienteId } = route.params;
 
   const handleSelect = (type) => {
-    navigation.navigate('Evaluaciones', { type, kinesiologoId });
+    navigation.navigate('Evaluaciones', { type, kinesiologoId, pacienteId });
   };
 
   return (

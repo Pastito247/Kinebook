@@ -12,7 +12,7 @@ const Lobby = ({ route }) => {
   const [nombre, setNombre] = useState('');
 
   useEffect(() => {
-    fetch(`http://192.168.0.10:3000/api/kinesiologo/${kinesiologoId}`)
+    fetch(`http://192.168.0.4:3000/api/kinesiologo/${kinesiologoId}`)
       .then(response => response.json())
       .then(data => {
         setNombre(data.nombre);
@@ -32,15 +32,15 @@ const Lobby = ({ route }) => {
           <Text style={styles.questionText}>¿Qué desea hacer?</Text>
           <TouchableOpacity
             style={styles.optionButton}
-            onPress={() => navigation.navigate('DetalleEvaluacion', { kinesiologoId })}
+            onPress={() => navigation.navigate('Pacientes', { kinesiologoId })}
           >
-            <Text style={styles.optionButtonText}>Ver Evaluaciones</Text>
+            <Text style={styles.optionButtonText}>Ver Pacientes</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.optionButton}
-            onPress={() => navigation.navigate('SelectEvaluation', { kinesiologoId })}
+            onPress={() => navigation.navigate('AgregarPaciente', { kinesiologoId })}
           >
-            <Text style={styles.optionButtonText}>Crear Evaluación</Text>
+            <Text style={styles.optionButtonText}>Agregar Paciente</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.optionButton}

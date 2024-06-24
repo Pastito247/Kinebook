@@ -5,13 +5,13 @@ const { width, height } = Dimensions.get('window');
 const background = require('../img/BackgroundLobby.jpeg');
 
 const DetalleEvaluaciones = ({ route, navigation }) => {
-  const { kinesiologoId } = route.params;
+  const { kinesiologoId, pacienteId } = route.params;
   const [evaluaciones, setEvaluaciones] = useState([]);
 
   useEffect(() => {
     const fetchEvaluaciones = async () => {
       try {
-        const response = await fetch(`http://192.168.0.10:3000/api/evaluaciones?kinesiologoId=${kinesiologoId}`);
+        const response = await fetch(`http://192.168.0.4:3000/api/evaluaciones/paciente/${pacienteId}?kinesiologoId=${kinesiologoId}`);
         if (!response.ok) {
           throw new Error('Error al obtener las evaluaciones');
         }
@@ -24,11 +24,11 @@ const DetalleEvaluaciones = ({ route, navigation }) => {
     };
 
     fetchEvaluaciones();
-  }, [kinesiologoId]);
+  }, [kinesiologoId, pacienteId]);
 
   const handleDelete = async (evaluacionId) => {
     try {
-      const response = await fetch(`http://192.168.0.10:3000/api/evaluaciones/${evaluacionId}`, {
+      const response = await fetch(`http://192.168.0.4:3000/api/evaluaciones/${evaluacionId}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
@@ -76,7 +76,7 @@ const DetalleEvaluaciones = ({ route, navigation }) => {
   };
 
   const renderEvaluacion = (evaluacion) => {
-    console.log('Evaluación:', evaluacion); // Añadimos este log para verificar los datos en consola
+    console.log('Evaluación:', evaluacion);
     switch (evaluacion.type) {
       case 'NeuroMuscular':
         return renderNeuroMuscular(evaluacion.answers);
@@ -93,7 +93,7 @@ const DetalleEvaluaciones = ({ route, navigation }) => {
     <ImageBackground source={background} style={styles.background}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
-          <Text style={styles.title}>Evaluaciones del Kinesiólogo</Text>
+          <Text style={styles.title}>Evaluaciones del Paciente</Text>
           {evaluaciones.length === 0 ? (
             <Text style={styles.noDataText}>No hay evaluaciones para mostrar</Text>
           ) : (

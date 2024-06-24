@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, Image, Switch } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, Image, Switch, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
 const dermatomas = require('../img/Dermatomas.jpg');
 const background = require('../img/BackgroundLobby.jpeg');
 
 const Evaluation = ({ route, navigation }) => {
-  const { type, kinesiologoId } = route.params;
+  const { type, kinesiologoId, pacienteId } = route.params;
   const [answers, setAnswers] = useState({});
   const [irradiation, setIrradiation] = useState(false);
-  const [patientName, setPatientName] = useState('');
 
   const questions = {
     NeuroMuscular: [
@@ -50,41 +49,69 @@ const Evaluation = ({ route, navigation }) => {
   };
 
   const handleSubmit = () => {
-    const formattedAnswers = {
-      ...answers,
-      ...questions.NeuroMuscular.reduce((acc, question) => {
-        if (answers[question.segment]) {
-          acc[question.segment] = {
-            mrc: answers[question.segment].mrc,
-            description: answers[question.segment].description,
-          };
-        }
-        return acc;
-      }, {}),
-    };
+    Alert.alert(
+      'Confirmación',
+      '¿Estás seguro de que deseas guardar esta evaluación?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Guardar',
+          onPress: () => {
+            const formattedAnswers = {
+              ...answers,
+              ...questions.NeuroMuscular.reduce((acc, question) => {
+                if (answers[question.segment]) {
+                  acc[question.segment] = {
+                    mrc: answers[question.segment].mrc,
+                    description: answers[question.segment].description,
+                  };
+                }
+                return acc;
+              }, {}),
+            };
 
-    fetch('http://192.168.0.10:3000/api/evaluaciones', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        type,
-        answers: formattedAnswers,
-        kinesiologoId,
-        fecha: new Date(),
-        patientName,
-      }),
-    })
-      .then(response => response.json())
-      .then(data => {
-        if (data.message === 'Evaluacion agregada exitosamente') {
-          navigation.navigate('Lobby', { kinesiologoId });
-        } else {
-          console.error('Error en la respuesta del servidor:', data);
-        }
-      })
-      .catch(error => console.error('Error al realizar la solicitud:', error));
+            fetch('http://192.168.0.4:3000/api/evaluaciones', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                type,
+                answers: formattedAnswers,
+                kinesiologoId,
+                pacienteId,
+                fecha: new Date(),
+              }),
+            })
+              .then(response => response.json())
+              .then(data => {
+                if (data.message === 'Evaluacion agregada exitosamente') {
+                  Alert.alert(
+                    'Evaluación guardada',
+                    '¿Quieres crear otra evaluación?',
+                    [
+                      {
+                        text: 'No',
+                        onPress: () => navigation.navigate('Lobby', { kinesiologoId }),
+                      },
+                      {
+                        text: 'Sí',
+                        onPress: () => navigation.navigate('SelectEvaluation', { kinesiologoId, pacienteId }),
+                      },
+                    ]
+                  );
+                } else {
+                  console.error('Error en la respuesta del servidor:', data);
+                }
+              })
+              .catch(error => console.error('Error al realizar la solicitud:', error));
+          },
+        },
+      ]
+    );
   };
 
   const renderNeuroMuscular = () => {
@@ -210,12 +237,6 @@ const Evaluation = ({ route, navigation }) => {
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.contentContainer}>
           <Text style={styles.title}>{type}</Text>
-          <Text style={styles.questionText}>Nombre del Paciente:</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setPatientName}
-            value={patientName}
-          />
           {renderQuestions()}
           <TouchableOpacity style={styles.button} onPress={handleSubmit}>
             <Text style={styles.buttonText}>Guardar Evaluación</Text>
