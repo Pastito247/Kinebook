@@ -10,7 +10,7 @@ const AgregarEvaluacion = ({ route }) => {
   const navigation = useNavigation();
 
   const handleAgregarEvaluacion = () => {
-    fetch('http://192.168.0.4:3000/api/evaluaciones', {
+    fetch('http://192.168.0.2:3000/api/evaluaciones', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

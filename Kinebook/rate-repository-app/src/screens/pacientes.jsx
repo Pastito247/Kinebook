@@ -10,7 +10,7 @@ const Pacientes = ({ route }) => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    fetch(`http://192.168.0.4:3000/api/pacientes?kinesiologoId=${kinesiologoId}`)
+    fetch(`http://192.168.0.2:3000/api/pacientes?kinesiologoId=${kinesiologoId}`)
       .then(response => response.json())
       .then(data => setPacientes(data))
       .catch(error => console.error('Error al obtener los pacientes:', error));
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   button: {
-    backgroundColor: '#007BFF',
+    backgroundColor: '#95E2C8',
     padding: 10,
     borderRadius: 5,
     marginTop: 10,

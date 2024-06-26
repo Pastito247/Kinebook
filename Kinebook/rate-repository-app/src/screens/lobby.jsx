@@ -12,7 +12,7 @@ const Lobby = ({ route }) => {
   const [nombre, setNombre] = useState('');
 
   useEffect(() => {
-    fetch(`http://192.168.0.4:3000/api/kinesiologo/${kinesiologoId}`)
+    fetch(`http://192.168.0.2:3000/api/kinesiologo/${kinesiologoId}`)
       .then(response => response.json())
       .then(data => {
         setNombre(data.nombre);

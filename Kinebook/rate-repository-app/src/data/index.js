@@ -27,9 +27,21 @@ const evaluacionSchema = new mongoose.Schema({
   kinesiologoId: mongoose.Schema.Types.ObjectId,
   pacienteId: { type: mongoose.Schema.Types.ObjectId, ref: 'Paciente', required: true },
   fecha: Date,
+  estado: { type: String, default: 'ACTIVO' }, // Agregar el campo estado
 });
 
 const Evaluacion = mongoose.model('Evaluacion', evaluacionSchema);
+
+const evaluacionTerminadaSchema = new mongoose.Schema({
+  type: String,
+  answers: mongoose.Schema.Types.Mixed,
+  kinesiologoId: mongoose.Schema.Types.ObjectId,
+  pacienteId: { type: mongoose.Schema.Types.ObjectId, ref: 'Paciente', required: true },
+  fecha: Date,
+  estado: String,
+});
+
+const EvaluacionTerminada = mongoose.model('EvaluacionTerminada', evaluacionTerminadaSchema);
 
 const pacienteSchema = new mongoose.Schema({
   rut: { type: String, required: true, unique: true },
@@ -96,7 +108,7 @@ app.post('/api/evaluaciones', async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(kinesiologoId) || !mongoose.Types.ObjectId.isValid(pacienteId)) {
       return res.status(400).json({ message: 'ID de kinesiólogo o paciente inválido' });
     }
-    const nuevaEvaluacion = new Evaluacion({ type, answers, kinesiologoId, pacienteId, fecha, patientName });
+    const nuevaEvaluacion = new Evaluacion({ type, answers, kinesiologoId, pacienteId, fecha, patientName, estado: 'ACTIVO' });
     await nuevaEvaluacion.save();
     res.json({ message: 'Evaluacion agregada exitosamente' });
   } catch (error) {
@@ -105,20 +117,20 @@ app.post('/api/evaluaciones', async (req, res) => {
   }
 });
 
-
 app.get('/api/evaluaciones', async (req, res) => {
   try {
     const { kinesiologoId } = req.query;
     if (!mongoose.Types.ObjectId.isValid(kinesiologoId)) {
       return res.status(400).json({ message: 'ID de kinesiólogo inválido' });
     }
-    const evaluaciones = await Evaluacion.find({ kinesiologoId });
+    const evaluaciones = await Evaluacion.find({ kinesiologoId, estado: 'ACTIVO' }); // Filtrar por estado ACTIVO
     res.json(evaluaciones);
   } catch (error) {
     console.error('Error al obtener las evaluaciones:', error);
     res.status(500).json({ message: 'Error al obtener las evaluaciones' });
   }
 });
+
 app.get('/api/evaluaciones/paciente/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -126,7 +138,7 @@ app.get('/api/evaluaciones/paciente/:id', async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(kinesiologoId)) {
       return res.status(400).json({ message: 'ID de paciente o kinesiólogo inválido' });
     }
-    const evaluaciones = await Evaluacion.find({ pacienteId: id, kinesiologoId });
+    const evaluaciones = await Evaluacion.find({ pacienteId: id, kinesiologoId, estado: 'ACTIVO' }); // Filtrar por estado ACTIVO
     res.json(evaluaciones);
   } catch (error) {
     console.error('Error al obtener las evaluaciones del paciente:', error);
@@ -134,11 +146,10 @@ app.get('/api/evaluaciones/paciente/:id', async (req, res) => {
   }
 });
 
-
 app.get('/api/evaluaciones/:id', async (req, res) => {
   try {
     const evaluacion = await Evaluacion.findById(req.params.id);
-    if (!evaluacion) {
+    if (!evaluacion || evaluacion.estado !== 'ACTIVO') {
       return res.status(404).json({ message: 'Evaluacion no encontrada' });
     }
     res.json(evaluacion);
@@ -154,10 +165,26 @@ app.delete('/api/evaluaciones/:id', async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(evaluacionId)) {
       return res.status(400).json({ message: 'ID de evaluación inválido' });
     }
-    const evaluacion = await Evaluacion.findByIdAndDelete(evaluacionId);
+    const evaluacion = await Evaluacion.findById(evaluacionId);
     if (!evaluacion) {
       return res.status(404).json({ message: 'Evaluación no encontrada' });
     }
+
+    // Crear una copia de la evaluación en EvaluacionesTerminadas
+    const evaluacionTerminada = new EvaluacionTerminada({
+      type: evaluacion.type,
+      answers: evaluacion.answers,
+      kinesiologoId: evaluacion.kinesiologoId,
+      pacienteId: evaluacion.pacienteId,
+      fecha: evaluacion.fecha,
+      estado: 'Eliminado'
+    });
+    await evaluacionTerminada.save();
+
+    // Cambiar el estado de la evaluación en la colección original a 'Eliminado'
+    evaluacion.estado = 'Eliminado';
+    await evaluacion.save();
+
     res.json({ message: 'Evaluación eliminada exitosamente' });
   } catch (err) {
     console.error('Error al eliminar la evaluación:', err.message);
@@ -198,16 +225,7 @@ app.get('/api/pacientes', async (req, res) => {
     res.status(500).json({ message: 'Error al obtener los pacientes' });
   }
 });
-app.get('/api/evaluaciones/paciente/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const evaluaciones = await Evaluacion.find({ pacienteId: id, kinesiologoId: req.query.kinesiologoId });
-    res.json(evaluaciones);
-  } catch (error) {
-    console.error('Error al obtener las evaluaciones del paciente:', error);
-    res.status(500).json({ message: 'Error al obtener las evaluaciones del paciente' });
-  }
-});
+
 app.get('/api/pacientes/:id', async (req, res) => {
   try {
     const pacienteId = req.params.id;
@@ -224,8 +242,6 @@ app.get('/api/pacientes/:id', async (req, res) => {
     res.status(500).send('Error al obtener el paciente');
   }
 });
-
-
 
 app.listen(port, () => {
   console.log(`Servidor ejecutándose en http://localhost:${port}`);

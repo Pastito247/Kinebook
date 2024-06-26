@@ -10,7 +10,7 @@ const Perfil = ({ route }) => {
   const [kinesiologo, setKinesiologo] = useState(null);
 
   useEffect(() => {
-    fetch(`http://192.168.0.4:3000/api/kinesiologo/${kinesiologoId}`)
+    fetch(`http://192.168.0.2:3000/api/kinesiologo/${kinesiologoId}`)
       .then(response => response.json())
       .then(data => {
         setKinesiologo(data);

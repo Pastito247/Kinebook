@@ -73,7 +73,7 @@ const Evaluation = ({ route, navigation }) => {
               }, {}),
             };
 
-            fetch('http://192.168.0.4:3000/api/evaluaciones', {
+            fetch('http://192.168.0.2:3000/api/evaluaciones', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -115,7 +115,7 @@ const Evaluation = ({ route, navigation }) => {
   };
 
   const renderNeuroMuscular = () => {
-    const mrcOptions = ['M0', 'M1', 'M2', 'M3', 'M3+', 'M4-', 'M4', 'M4+', 'M5'];
+    const mrcOptions = ['Seleccione','M0', 'M1', 'M2', 'M3', 'M3+', 'M4-', 'M4', 'M4+', 'M5'];
     return questions[type].map((question, index) => (
       <View key={index} style={styles.segmentContainer}>
         <Text style={styles.segmentText}>{`Segmento ${question.segment}`}</Text>
@@ -220,8 +220,10 @@ const Evaluation = ({ route, navigation }) => {
       return questions[type].map((question, index) => (
         <View key={index} style={styles.questionContainer}>
           <Text style={styles.questionText}>{question}</Text>
+          <Text style={styles.infoText}>(Rellene con grados de movilidad)</Text>
           <TextInput
             style={styles.input}
+            keyboardType="numeric"
             onChangeText={(text) => handleChange(text, index, 'answer')}
             value={answers[index]?.answer || ''}
           />
@@ -282,6 +284,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 10,
   },
+  infoText: {
+    fontSize: 14,
+    color: 'gray',
+    marginBottom: 10,
+  },
   input: {
     height: 40,
     borderColor: 'gray',
@@ -290,7 +297,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   button: {
-    backgroundColor: '#1e90ff',
+    backgroundColor: '#95E2C8',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',

@@ -11,7 +11,7 @@ const DetalleEvaluaciones = ({ route, navigation }) => {
   useEffect(() => {
     const fetchEvaluaciones = async () => {
       try {
-        const response = await fetch(`http://192.168.0.4:3000/api/evaluaciones/paciente/${pacienteId}?kinesiologoId=${kinesiologoId}`);
+        const response = await fetch(`http://192.168.0.2:3000/api/evaluaciones/paciente/${pacienteId}?kinesiologoId=${kinesiologoId}`);
         if (!response.ok) {
           throw new Error('Error al obtener las evaluaciones');
         }
@@ -28,7 +28,7 @@ const DetalleEvaluaciones = ({ route, navigation }) => {
 
   const handleDelete = async (evaluacionId) => {
     try {
-      const response = await fetch(`http://192.168.0.4:3000/api/evaluaciones/${evaluacionId}`, {
+      const response = await fetch(`http://192.168.0.2:3000/api/evaluaciones/${evaluacionId}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
