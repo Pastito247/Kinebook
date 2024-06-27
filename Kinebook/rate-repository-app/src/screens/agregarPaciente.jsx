@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, ImageBackground, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, ImageBackground, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const background = require('../img/BackgroundLobby.jpeg');
@@ -87,7 +87,9 @@ const AgregarPaciente = ({ route }) => {
             <TextInput style={styles.input} value={fechaNacimiento} onChangeText={setFechaNacimiento} placeholder="YYYY-MM-DD" />
             <Text style={styles.label}>Diagnóstico:</Text>
             <TextInput style={styles.input} value={diagnostico} onChangeText={setDiagnostico} />
-            <Button title="Agregar Paciente" onPress={handleAgregarPaciente} />
+            <TouchableOpacity style={styles.button} onPress={handleAgregarPaciente}>
+            <Text style={styles.buttonText}>Agregar Paciente</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -100,6 +102,17 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     height: '100%',
+  },
+    button: {
+    backgroundColor: '#95E2C8',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
   },
   scrollContainer: {
     flexGrow: 1,

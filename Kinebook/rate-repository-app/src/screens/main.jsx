@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback, useContext } from 'react';
 import { View, Text, TextInput, StyleSheet, Image, ImageBackground, TouchableOpacity, Alert, Dimensions, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { AuthContext } from '../data/AuthContext';
 
 const { width, height } = Dimensions.get('window');
 const background = require('../img/background.jpg');
@@ -9,6 +10,7 @@ const welcomeImage = require('../img/welcome.jpg');
 const Main = ({ navigation }) => {
   const [correo, setCorreo] = useState('');
   const [contraseña, setContraseña] = useState('');
+  const { login } = useContext(AuthContext);
 
   const handleLogin = async () => {
     try {
@@ -20,14 +22,20 @@ const Main = ({ navigation }) => {
         body: JSON.stringify({ correo, contraseña }),
       });
       if (!response.ok) {
-        throw new Error('Correo o contraseña incorrectos');
+        const errorResponse = await response.json();
+        throw new Error(errorResponse.message || 'Correo o contraseña incorrectos');
       }
       const result = await response.json();
-      Alert.alert('Éxito', 'Inicio de sesión exitoso');
-      navigation.navigate('Lobby', { kinesiologoId: result.kinesiologoId });
+      if (result.kinesiologoId) {
+        Alert.alert('Éxito', 'Inicio de sesión exitoso');
+        login(result.kinesiologoId);
+        navigation.navigate('Lobby', { kinesiologoId: result.kinesiologoId });
+      } else {
+        throw new Error('kinesiologoId no encontrado en la respuesta');
+      }
     } catch (error) {
       console.error('Error al realizar la solicitud:', error.message);
-      Alert.alert('Error', 'Correo o contraseña incorrectos');
+      Alert.alert('Error', error.message);
     }
   };
 
@@ -42,7 +50,7 @@ const Main = ({ navigation }) => {
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20} // Adjust this value if needed
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
     >
       <ImageBackground source={background} style={styles.background}>
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">

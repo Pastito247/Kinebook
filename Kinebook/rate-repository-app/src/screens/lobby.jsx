@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, TouchableOpacity, ImageBackground, Dimensions, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { AuthContext } from '../data/AuthContext';
 
 const { width, height } = Dimensions.get('window');
-
 const background = require('../img/BackgroundLobby.jpeg');
 
 const Lobby = ({ route }) => {
   const { kinesiologoId } = route.params;
   const navigation = useNavigation();
   const [nombre, setNombre] = useState('');
+  const { logout } = useContext(AuthContext);
 
   useEffect(() => {
     fetch(`http://192.168.0.2:3000/api/kinesiologo/${kinesiologoId}`)
@@ -21,6 +22,7 @@ const Lobby = ({ route }) => {
   }, [kinesiologoId]);
 
   const handleLogout = () => {
+    logout();
     navigation.navigate('Main');
   };
 
@@ -30,30 +32,32 @@ const Lobby = ({ route }) => {
         <View style={styles.container}>
           <Text style={styles.welcomeText}>Bienvenido {nombre}</Text>
           <Text style={styles.questionText}>¿Qué desea hacer?</Text>
-          <TouchableOpacity
-            style={styles.optionButton}
-            onPress={() => navigation.navigate('Pacientes', { kinesiologoId })}
-          >
-            <Text style={styles.optionButtonText}>Ver Pacientes</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.optionButton}
-            onPress={() => navigation.navigate('AgregarPaciente', { kinesiologoId })}
-          >
-            <Text style={styles.optionButtonText}>Agregar Paciente</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.optionButton}
-            onPress={() => navigation.navigate('Profile', { kinesiologoId })}
-          >
-            <Text style={styles.optionButtonText}>Ver Perfil</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.optionButton}
-            onPress={handleLogout}
-          >
-            <Text style={styles.optionButtonText}>Cerrar Sesión</Text>
-          </TouchableOpacity>
+          <View style={styles.optionsContainer}>
+            <TouchableOpacity
+              style={styles.optionButton}
+              onPress={() => navigation.navigate('Pacientes', { kinesiologoId })}
+            >
+              <Text style={styles.optionButtonText}>Ver Pacientes</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.optionButton}
+              onPress={() => navigation.navigate('AgregarPaciente', { kinesiologoId })}
+            >
+              <Text style={styles.optionButtonText}>Agregar Paciente</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.optionButton}
+              onPress={() => navigation.navigate('Profile', { kinesiologoId })}
+            >
+              <Text style={styles.optionButtonText}>Ver Perfil</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.optionButton}
+              onPress={handleLogout}
+            >
+              <Text style={styles.optionButtonText}>Cerrar Sesión</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </ImageBackground>
@@ -85,31 +89,34 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   welcomeText: {
-    color: 'black',
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'center',
+    color: '#000',
+    marginVertical: 20,
   },
   questionText: {
-    color: 'black',
     fontSize: 18,
-    marginBottom: 20,
-    textAlign: 'center',
+    color: '#000',
+    marginVertical: 20,
+  },
+  optionsContainer: {
+    width: '100%',
+    padding: 20,
+    borderRadius: 10,
   },
   optionButton: {
     backgroundColor: '#77CFAF',
     paddingVertical: 15,
-    paddingHorizontal: 30,
+    paddingHorizontal: 20,
     borderRadius: 10,
     marginVertical: 10,
-    width: '100%',
     alignItems: 'center',
+    width: '100%',
   },
   optionButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: '#FFFFFF',
     fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

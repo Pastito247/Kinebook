@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ImageBackground, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, Dimensions, ScrollView, TouchableOpacity, Alert } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 const background = require('../img/BackgroundLobby.jpeg');
@@ -37,9 +37,29 @@ const DetalleEvaluaciones = ({ route, navigation }) => {
       }
 
       setEvaluaciones(evaluaciones.filter(evaluacion => evaluacion._id !== evaluacionId));
+      Alert.alert('Eliminación exitosa', 'La evaluación ha sido eliminada correctamente.');
     } catch (error) {
       console.error('Error al eliminar la evaluación:', error);
     }
+  };
+
+  const confirmDelete = (evaluacionId) => {
+    Alert.alert(
+      'Confirmar eliminación',
+      '¿Estás seguro de que deseas eliminar esta evaluación?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Eliminar',
+          onPress: () => handleDelete(evaluacionId),
+          style: 'destructive',
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   const renderNeuroMuscular = (answers) => (
@@ -104,7 +124,7 @@ const DetalleEvaluaciones = ({ route, navigation }) => {
                 <Text style={styles.text}>Resultados:</Text>
                 {renderEvaluacion(evaluacion)}
                 <Text style={styles.text}>Fecha: {new Date(evaluacion.fecha).toLocaleDateString()}</Text>
-                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(evaluacion._id)}>
+                <TouchableOpacity style={styles.deleteButton} onPress={() => confirmDelete(evaluacion._id)}>
                   <Text style={styles.deleteButtonText}>Eliminar</Text>
                 </TouchableOpacity>
                 <View style={styles.divider} />
