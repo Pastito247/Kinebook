@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
+import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const background = require('../img/BackgroundLobby.jpeg');
@@ -7,14 +7,32 @@ const background = require('../img/BackgroundLobby.jpeg');
 const Pacientes = ({ route }) => {
   const { kinesiologoId } = route.params;
   const [pacientes, setPacientes] = useState([]);
+  const [filteredPacientes, setFilteredPacientes] = useState([]);
+  const [searchText, setSearchText] = useState('');
   const navigation = useNavigation();
 
   useEffect(() => {
     fetch(`http://192.168.0.2:3000/api/pacientes?kinesiologoId=${kinesiologoId}`)
       .then(response => response.json())
-      .then(data => setPacientes(data))
+      .then(data => {
+        setPacientes(data);
+        setFilteredPacientes(data);
+      })
       .catch(error => console.error('Error al obtener los pacientes:', error));
   }, [kinesiologoId]);
+
+  useEffect(() => {
+    if (searchText === '') {
+      setFilteredPacientes(pacientes);
+    } else {
+      setFilteredPacientes(
+        pacientes.filter(paciente =>
+          paciente.nombre.toLowerCase().includes(searchText.toLowerCase()) ||
+          paciente.apellidoPaterno.toLowerCase().includes(searchText.toLowerCase())
+        )
+      );
+    }
+  }, [searchText, pacientes]);
 
   const handleAgregarEvaluacion = (pacienteId) => {
     navigation.navigate('SelectEvaluation', { kinesiologoId, pacienteId });
@@ -28,11 +46,52 @@ const Pacientes = ({ route }) => {
     navigation.navigate('DetallePaciente', { pacienteId, kinesiologoId });
   };
 
+  const handleBorrarPaciente = (pacienteId) => {
+    Alert.alert(
+      "Confirmar eliminación",
+      "¿Estás seguro de que deseas eliminar este paciente?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel"
+        },
+        {
+          text: "Eliminar",
+          onPress: () => {
+            fetch(`http://192.168.0.2:3000/api/pacientes/${pacienteId}`, {
+              method: 'DELETE',
+            })
+              .then(response => {
+                if (response.ok) {
+                  setPacientes(pacientes.filter(paciente => paciente._id !== pacienteId));
+                  setFilteredPacientes(filteredPacientes.filter(paciente => paciente._id !== pacienteId));
+                } else {
+                  console.error('Error al borrar el paciente:', response.statusText);
+                }
+              })
+              .catch(error => console.error('Error al borrar el paciente:', error));
+          },
+          style: "destructive"
+        }
+      ]
+    );
+  };
+
+  const handleEditarPaciente = (pacienteId) => {
+    navigation.navigate('EditarPaciente', { pacienteId, kinesiologoId });
+  };
+
   return (
     <ImageBackground source={background} style={styles.background}>
       <View style={styles.container}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Buscar paciente por nombre"
+          value={searchText}
+          onChangeText={setSearchText}
+        />
         <FlatList
-          data={pacientes}
+          data={filteredPacientes}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
             <View style={styles.pacienteContainer}>
@@ -45,6 +104,12 @@ const Pacientes = ({ route }) => {
               </TouchableOpacity>
               <TouchableOpacity style={styles.button} onPress={() => handleVerDetallePaciente(item._id)}>
                 <Text style={styles.buttonText}>Ver Detalles</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button} onPress={() => handleEditarPaciente(item._id)}>
+                <Text style={styles.buttonText}>Editar Paciente</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={() => handleBorrarPaciente(item._id)}>
+                <Text style={styles.buttonText}>Borrar Paciente</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -64,6 +129,14 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     marginTop: 30,
+  },
+  searchInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 20,
+    backgroundColor: 'rgba(255, 255, 255, 1)', // Fondo blanco semitransparente
   },
   pacienteContainer: {
     marginBottom: 20,
@@ -87,6 +160,10 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     textAlign: 'center',
+  },
+  deleteButton: {
+    backgroundColor: '#FF6F61', // Color rojo para el botón de borrar
+    marginTop: 10,
   },
 });
 

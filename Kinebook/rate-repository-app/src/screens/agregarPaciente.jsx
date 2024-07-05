@@ -34,6 +34,11 @@ const AgregarPaciente = ({ route }) => {
     return dvFinal === dv;
   };
 
+  const convertirFecha = (fecha) => {
+    const [dia, mes, año] = fecha.split('-');
+    return `${año}-${mes}-${dia}`;
+  };
+
   const handleAgregarPaciente = () => {
     if (!validarRut(rut)) {
       Alert.alert('RUT inválido', 'Por favor ingrese un RUT válido.');
@@ -50,7 +55,7 @@ const AgregarPaciente = ({ route }) => {
         nombre,
         apellidoPaterno,
         apellidoMaterno,
-        fechaNacimiento,
+        fechaNacimiento: convertirFecha(fechaNacimiento),
         diagnostico,
         kinesiologoId,
       }),
@@ -58,7 +63,7 @@ const AgregarPaciente = ({ route }) => {
       .then(response => response.json())
       .then(data => {
         if (data.message === 'Paciente agregado exitosamente') {
-          navigation.navigate('Pacientes', { kinesiologoId });
+          navigation.navigate('lobby', { kinesiologoId });
         } else {
           console.error('Error en la respuesta del servidor:', data);
         }
@@ -84,7 +89,7 @@ const AgregarPaciente = ({ route }) => {
             <Text style={styles.label}>Apellido Materno (opcional):</Text>
             <TextInput style={styles.input} value={apellidoMaterno} onChangeText={setApellidoMaterno} />
             <Text style={styles.label}>Fecha de Nacimiento:</Text>
-            <TextInput style={styles.input} value={fechaNacimiento} onChangeText={setFechaNacimiento} placeholder="YYYY-MM-DD" />
+            <TextInput style={styles.input} keyboardType="numeric" value={fechaNacimiento} onChangeText={setFechaNacimiento} placeholder="DD-MM-AAAA" />
             <Text style={styles.label}>Diagnóstico:</Text>
             <TextInput style={styles.input} value={diagnostico} onChangeText={setDiagnostico} />
             <TouchableOpacity style={styles.button} onPress={handleAgregarPaciente}>
@@ -103,7 +108,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-    button: {
+  button: {
     backgroundColor: '#95E2C8',
     padding: 15,
     borderRadius: 10,

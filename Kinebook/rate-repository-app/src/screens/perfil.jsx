@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ImageBackground, Dimensions, TouchableOpacity } from 'react-native';
-
-
+import { View, Text, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const background = require('../img/BackgroundLobby.jpeg');
 
 const Perfil = ({ route }) => {
   const { kinesiologoId } = route.params;
   const [kinesiologo, setKinesiologo] = useState(null);
+  const navigation = useNavigation();
 
   useEffect(() => {
     fetch(`http://192.168.0.2:3000/api/kinesiologo/${kinesiologoId}`)
@@ -31,6 +31,12 @@ const Perfil = ({ route }) => {
           <Text>{kinesiologo.nombre} {kinesiologo.apellido}</Text>
           <Text style={styles.text}>Correo: </Text>
           <Text>{kinesiologo.correo}</Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('EditarPerfil', { kinesiologo })}
+          >
+            <Text style={styles.buttonText}>Editar Perfil</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </ImageBackground>

@@ -243,6 +243,73 @@ app.get('/api/pacientes/:id', async (req, res) => {
   }
 });
 
+// Ruta para eliminar un paciente
+app.delete('/api/pacientes/:id', async (req, res) => {
+  try {
+    const pacienteId = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(pacienteId)) {
+      return res.status(400).json({ message: 'ID de paciente inválido' });
+    }
+    const paciente = await Paciente.findByIdAndDelete(pacienteId);
+    if (!paciente) {
+      return res.status(404).json({ message: 'Paciente no encontrado' });
+    }
+    res.json({ message: 'Paciente eliminado exitosamente' });
+  } catch (err) {
+    console.error('Error al eliminar el paciente:', err);
+    res.status(500).send('Error al eliminar el paciente');
+  }
+});
+
+// Ruta para editar un paciente
+app.put('/api/pacientes/:id', async (req, res) => {
+  try {
+    const pacienteId = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(pacienteId)) {
+      return res.status(400).json({ message: 'ID de paciente inválido' });
+    }
+    const updatedData = req.body;
+    const paciente = await Paciente.findByIdAndUpdate(pacienteId, updatedData, { new: true });
+    if (!paciente) {
+      return res.status(404).json({ message: 'Paciente no encontrado' });
+    }
+    res.json({ message: 'Paciente actualizado exitosamente', paciente });
+  } catch (err) {
+    console.error('Error al actualizar el paciente:', err);
+    res.status(500).send('Error al actualizar el paciente');
+  }
+});
+
+app.put('/api/kinesiologos/:id', async (req, res) => {
+  try {
+    const kinesiologoId = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(kinesiologoId)) {
+      return res.status(400).json({ message: 'ID de kinesiologo inválido' });
+    }
+
+    const { nombre, apellido, correo, contraseña } = req.body;
+    const updatedData = { nombre, apellido, correo };
+
+    // Si se proporciona una nueva contraseña, hay que cifrarla
+    if (contraseña) {
+      const hashedPassword = await bcrypt.hash(contraseña, 10);
+      updatedData.contraseña = hashedPassword;
+    }
+
+    const kinesiologo = await Kinesiologo.findByIdAndUpdate(kinesiologoId, updatedData, { new: true });
+    if (!kinesiologo) {
+      return res.status(404).json({ message: 'Kinesiologo no encontrado' });
+    }
+
+    res.json({ message: 'Perfil actualizado exitosamente', kinesiologo });
+  } catch (err) {
+    console.error('Error al actualizar el perfil:', err);
+    res.status(500).send('Error al actualizar el perfil');
+  }
+});
+
+
+
 app.listen(port, () => {
   console.log(`Servidor ejecutándose en http://localhost:${port}`);
 });

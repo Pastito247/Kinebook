@@ -14,6 +14,8 @@ import AgregarPaciente from './src/screens/agregarPaciente';
 import AgregarEvaluacion from './src/screens/agregarEvaluacion';
 import Pacientes from './src/screens/pacientes';
 import DetallePaciente from './src/screens/detallePaciente';
+import EditarPerfil from './src/screens/editarPerfil';
+import EditarPaciente from './src/screens/editarPaciente';
 
 const Stack = createNativeStackNavigator();
 
@@ -35,6 +37,8 @@ const AppNavigator = () => {
         <Stack.Screen name="AgregarPaciente" component={AgregarPaciente} options={{ headerTitle: 'Agregar Paciente', headerStyle: { backgroundColor: '#388E71' }, headerTintColor: '#FFFFFF' }} />
         <Stack.Screen name="AgregarEvaluacion" component={AgregarEvaluacion} options={{ headerShown: false }} />
         <Stack.Screen name="DetallePaciente" component={DetallePaciente} options={{ headerTitle: 'Detalles del Paciente', headerStyle: { backgroundColor: '#388E71' }, headerTintColor: '#FFFFFF' }} />
+        <Stack.Screen name="EditarPerfil" component={EditarPerfil} options={{ headerTitle: 'Editar Perfil', headerStyle: { backgroundColor: '#388E71' }, headerTintColor: '#FFFFFF' }} />
+        <Stack.Screen name="EditarPaciente" component={EditarPaciente} options={{ headerTitle: 'Editar Paciente', headerStyle: { backgroundColor: '#388E71' }, headerTintColor: '#FFFFFF'}} />
       </Stack.Navigator>
     </NavigationContainer>
   );

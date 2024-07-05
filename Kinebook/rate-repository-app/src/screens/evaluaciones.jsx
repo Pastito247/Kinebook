@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, Image, Switch, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
@@ -9,6 +9,7 @@ const Evaluation = ({ route, navigation }) => {
   const { type, kinesiologoId, pacienteId } = route.params;
   const [answers, setAnswers] = useState({});
   const [irradiation, setIrradiation] = useState(false);
+  const [isAnswered, setIsAnswered] = useState(false);
 
   const questions = {
     NeuroMuscular: [
@@ -46,9 +47,20 @@ const Evaluation = ({ route, navigation }) => {
     newAnswers[key] = newAnswers[key] || {};
     newAnswers[key][field] = text;
     setAnswers(newAnswers);
+
+    // Check if any question has been answered
+    const answered = Object.values(newAnswers).some(
+      (question) => Object.values(question).some((value) => value.trim().length > 0)
+    );
+    setIsAnswered(answered);
   };
 
   const handleSubmit = () => {
+    if (!isAnswered) {
+      Alert.alert('Error', 'Debe responder al menos una pregunta antes de guardar la evaluación.');
+      return;
+    }
+
     Alert.alert(
       'Confirmación',
       '¿Estás seguro de que deseas guardar esta evaluación?',
@@ -240,7 +252,11 @@ const Evaluation = ({ route, navigation }) => {
         <View style={styles.contentContainer}>
           <Text style={styles.title}>{type}</Text>
           {renderQuestions()}
-          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: isAnswered ? '#95E2C8' : '#c4c4c4' }]}
+            onPress={handleSubmit}
+            disabled={!isAnswered}
+          >
             <Text style={styles.buttonText}>Guardar Evaluación</Text>
           </TouchableOpacity>
         </View>
