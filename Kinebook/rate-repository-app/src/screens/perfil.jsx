@@ -10,7 +10,7 @@ const Perfil = ({ route }) => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    fetch(`http://192.168.0.2:3000/api/kinesiologo/${kinesiologoId}`)
+    fetch(`http://192.168.0.6:3000/api/kinesiologo/${kinesiologoId}`)
       .then(response => response.json())
       .then(data => {
         setKinesiologo(data);
@@ -33,7 +33,7 @@ const Perfil = ({ route }) => {
           <Text>{kinesiologo.correo}</Text>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('EditarPerfil', { kinesiologo })}
+            onPress={() => navigation.navigate('EditarPerfil', { kinesiologo, kinesiologoId })}
           >
             <Text style={styles.buttonText}>Editar Perfil</Text>
           </TouchableOpacity>

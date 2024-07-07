@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ImageBackground, Dimensions, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, Dimensions, ScrollView, Button } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 const background = require('../img/BackgroundLobby.jpeg');
@@ -15,7 +15,7 @@ const calcularEdad = (fechaNacimiento) => {
   return edad;
 };
 
-const DetallePaciente = ({ route }) => {
+const DetallePaciente = ({ route, navigation }) => {
   const { pacienteId } = route.params;
   const [paciente, setPaciente] = useState(null);
   const [error, setError] = useState(null);
@@ -23,7 +23,7 @@ const DetallePaciente = ({ route }) => {
   useEffect(() => {
     const fetchPaciente = async () => {
       try {
-        const response = await fetch(`http://192.168.0.2:3000/api/pacientes/${pacienteId}`);
+        const response = await fetch(`http://192.168.0.6:3000/api/pacientes/${pacienteId}`);
         if (!response.ok) {
           throw new Error('Error al obtener los detalles del paciente');
         }
@@ -78,6 +78,10 @@ const DetallePaciente = ({ route }) => {
           <Text style={styles.text}>Edad: {edad} años</Text>
           <Text style={styles.text}>RUT: {paciente.rut}</Text>
           <Text style={styles.text}>Diagnóstico: {paciente.diagnostico}</Text>
+          <Button 
+            title="Editar Paciente" 
+            onPress={() => navigation.navigate('EditarPaciente', { paciente })}
+          />
         </View>
       </ScrollView>
     </ImageBackground>

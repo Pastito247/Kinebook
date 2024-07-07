@@ -13,7 +13,7 @@ const Lobby = ({ route }) => {
   const { logout } = useContext(AuthContext);
 
   useEffect(() => {
-    fetch(`http://192.168.0.2:3000/api/kinesiologo/${kinesiologoId}`)
+    fetch(`http://192.168.0.6:3000/api/kinesiologo/${kinesiologoId}`)
       .then(response => response.json())
       .then(data => {
         setNombre(data.nombre);
@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  
 });
 
 export default Lobby;

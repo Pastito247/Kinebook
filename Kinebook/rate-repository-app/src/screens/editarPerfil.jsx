@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ImageBackground, Alert } from 'react-native';
 
 const background = require('../img/BackgroundLobby.jpeg');
 
 const EditarPerfil = ({ route, navigation }) => {
   const { kinesiologo } = route.params;
+  const { kinesiologoId } = route.params;
   const [nombre, setNombre] = useState(kinesiologo.nombre);
   const [apellido, setApellido] = useState(kinesiologo.apellido);
   const [correo, setCorreo] = useState(kinesiologo.correo);
@@ -16,7 +17,7 @@ const EditarPerfil = ({ route, navigation }) => {
       updatedData.contraseña = contraseña;
     }
 
-    fetch(`http://192.168.0.2:3000/api/kinesiologos/${kinesiologo._id}`, {
+    fetch(`http://192.168.0.6:3000/api/kinesiologos/${kinesiologo._id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -26,9 +27,34 @@ const EditarPerfil = ({ route, navigation }) => {
       .then(response => response.json())
       .then(data => {
         console.log('Perfil actualizado:', data);
-        navigation.goBack();
+        Alert.alert(
+          'Éxito',
+          'Perfil actualizado correctamente. Vuelva a iniciar sesion',
+          [{ text: 'OK', onPress: () => navigation.navigate('Main') }],
+          { cancelable: false }
+        );
       })
-      .catch(error => console.error('Error al actualizar el perfil:', error));
+      .catch(error => {
+        console.error('Error al actualizar el perfil:', error);
+        Alert.alert(
+          'Error',
+          'Hubo un problema al actualizar el perfil. Inténtalo de nuevo más tarde.',
+          [{ text: 'OK' }],
+          { cancelable: false }
+        );
+      });
+  };
+
+  const confirmSave = () => {
+    Alert.alert(
+      'Confirmar cambios',
+      '¿Estás seguro de que quieres guardar los cambios?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Sí', onPress: handleSave },
+      ],
+      { cancelable: false }
+    );
   };
 
   return (
@@ -53,14 +79,14 @@ const EditarPerfil = ({ route, navigation }) => {
             value={correo}
             onChangeText={setCorreo}
           />
-          <Text style={styles.text}>Contraseña</Text>
+          <Text style={styles.text}>Nueva Contraseña</Text>
           <TextInput
             style={styles.input}
             value={contraseña}
             onChangeText={setContraseña}
             secureTextEntry
           />
-          <TouchableOpacity style={styles.button} onPress={handleSave}>
+          <TouchableOpacity style={styles.button} onPress={confirmSave}>
             <Text style={styles.buttonText}>Guardar Cambios</Text>
           </TouchableOpacity>
         </View>

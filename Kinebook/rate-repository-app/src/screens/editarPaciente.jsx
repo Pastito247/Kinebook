@@ -5,6 +5,17 @@ const background = require('../img/BackgroundLobby.jpeg');
 
 const EditarPaciente = ({ route, navigation }) => {
   const { paciente } = route.params;
+
+  if (!paciente) {
+    return (
+      <ImageBackground source={background} style={styles.background}>
+        <View style={styles.container}>
+          <Text style={styles.noDataText}>No hay datos del paciente para editar.</Text>
+        </View>
+      </ImageBackground>
+    );
+  }
+
   const [nombre, setNombre] = useState(paciente.nombre);
   const [apellidoPaterno, setApellidoPaterno] = useState(paciente.apellidoPaterno);
   const [apellidoMaterno, setApellidoMaterno] = useState(paciente.apellidoMaterno);
@@ -14,7 +25,7 @@ const EditarPaciente = ({ route, navigation }) => {
   const handleSave = () => {
     const updatedData = { nombre, apellidoPaterno, apellidoMaterno, fechaNacimiento, diagnostico };
 
-    fetch(`http://192.168.0.2:3000/api/pacientes/${paciente._id}`, {
+    fetch(`http://192.168.0.6:3000/api/pacientes/${paciente._id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -50,12 +61,6 @@ const EditarPaciente = ({ route, navigation }) => {
             style={styles.input}
             value={apellidoMaterno}
             onChangeText={setApellidoMaterno}
-          />
-          <Text style={styles.text}>Fecha de Nacimiento</Text>
-          <TextInput
-            style={styles.input}
-            value={fechaNacimiento}
-            onChangeText={setFechaNacimiento}
           />
           <Text style={styles.text}>Diagnóstico</Text>
           <TextInput
@@ -117,6 +122,11 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  noDataText: {
+    fontSize: 18,
+    color: 'black',
     textAlign: 'center',
   },
 });

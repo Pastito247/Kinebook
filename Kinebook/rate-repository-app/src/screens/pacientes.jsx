@@ -11,14 +11,18 @@ const Pacientes = ({ route }) => {
   const [searchText, setSearchText] = useState('');
   const navigation = useNavigation();
 
-  useEffect(() => {
-    fetch(`http://192.168.0.2:3000/api/pacientes?kinesiologoId=${kinesiologoId}`)
+  const fetchPacientes = () => {
+    fetch(`http://192.168.0.6:3000/api/pacientes?kinesiologoId=${kinesiologoId}`)
       .then(response => response.json())
       .then(data => {
         setPacientes(data);
         setFilteredPacientes(data);
       })
       .catch(error => console.error('Error al obtener los pacientes:', error));
+  };
+
+  useEffect(() => {
+    fetchPacientes();
   }, [kinesiologoId]);
 
   useEffect(() => {
@@ -58,27 +62,35 @@ const Pacientes = ({ route }) => {
         {
           text: "Eliminar",
           onPress: () => {
-            fetch(`http://192.168.0.2:3000/api/pacientes/${pacienteId}`, {
+            fetch(`http://192.168.0.6:3000/api/pacientes/${pacienteId}`, {
               method: 'DELETE',
             })
               .then(response => {
                 if (response.ok) {
-                  setPacientes(pacientes.filter(paciente => paciente._id !== pacienteId));
-                  setFilteredPacientes(filteredPacientes.filter(paciente => paciente._id !== pacienteId));
+                  Alert.alert(
+                    "Éxito",
+                    "Paciente eliminado correctamente.",
+                    [{ text: "OK", onPress: () => fetchPacientes() }],
+                    { cancelable: false }
+                  );
                 } else {
                   console.error('Error al borrar el paciente:', response.statusText);
                 }
               })
-              .catch(error => console.error('Error al borrar el paciente:', error));
+              .catch(error => {
+                console.error('Error al borrar el paciente:', error);
+                Alert.alert(
+                  "Error",
+                  "Hubo un problema al eliminar el paciente. Inténtalo de nuevo más tarde.",
+                  [{ text: "OK" }],
+                  { cancelable: false }
+                );
+              });
           },
           style: "destructive"
         }
       ]
     );
-  };
-
-  const handleEditarPaciente = (pacienteId) => {
-    navigation.navigate('EditarPaciente', { pacienteId, kinesiologoId });
   };
 
   return (
@@ -104,9 +116,6 @@ const Pacientes = ({ route }) => {
               </TouchableOpacity>
               <TouchableOpacity style={styles.button} onPress={() => handleVerDetallePaciente(item._id)}>
                 <Text style={styles.buttonText}>Ver Detalles</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={() => handleEditarPaciente(item._id)}>
-                <Text style={styles.buttonText}>Editar Paciente</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={() => handleBorrarPaciente(item._id)}>
                 <Text style={styles.buttonText}>Borrar Paciente</Text>

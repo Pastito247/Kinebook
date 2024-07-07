@@ -85,7 +85,7 @@ const Evaluation = ({ route, navigation }) => {
               }, {}),
             };
 
-            fetch('http://192.168.0.2:3000/api/evaluaciones', {
+            fetch('http://192.168.0.6:3000/api/evaluaciones', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
